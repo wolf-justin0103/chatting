@@ -2,9 +2,7 @@
 
 Talk is a Laravel 5 based user conversation (inbox) system. You can easily integrate this package with any Laravel based project. It helps you to develop a messaging system in just 25 mins. So let's start :)
 
-[![Beerpay](https://beerpay.io/nahid/talk/badge.svg)](https://beerpay.io/nahid/talk)
 
-   
    
 ![Talk Screenshot](http://i.imgur.com/ELqGVrx.png?1 "Talk Conversation System")
 
@@ -235,3 +233,8 @@ boolean deleteConversations($conversationId)
 [Shipu Ahamed](https://github.com/shipu)
 
 Thanks :)
+
+## Support on Beerpay
+Hey dude! Help me out for a couple of :beers:!
+
+[![Beerpay](https://beerpay.io/nahid/talk/badge.svg?style=beer-square)](https://beerpay.io/nahid/talk)  [![Beerpay](https://beerpay.io/nahid/talk/make-wish.svg?style=flat-square)](https://beerpay.io/nahid/talk?focus=wish)
