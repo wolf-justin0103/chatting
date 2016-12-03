@@ -1,28 +1,14 @@
 # Laravel-Talk
 
-Talk is a Laravel 5 based user conversation (inbox) system. You can easily integrate this package with any Laravel based project. It helps you to develop a messaging system in just few mins. Here is a project screenshot that was developed by Talk.
+Talk is a Laravel 5 based user conversation (inbox) system. You can easily integrate this package with any Laravel based project. It helps you to develop a messaging system in just 25 mins. So let's start :)
 
-![Talk-Example Screenshot](http://i.imgur.com/uQ7sgmI.png "Talk-Example Project")
 
-You may try [Talk-Example](https://github.com/nahid/talk-example) project.
-
-So let's start your tour :)
-
-### Features
-
-* Head to head messaging
-* Creating new conversation
-* Message threads with latest one
-* View conversations by user id or conversation id
-* Support pagination in threads and messages
-* Delete(soft delete) message from both end. Sender and receiver can delete their message from their end.
-* Permanent delete message
-* Mark message as seen
-* Only participant can view or access there message or message threads
+   
+![Talk Screenshot](http://i.imgur.com/ELqGVrx.png?1 "Talk Conversation System")
 
 ### Installation
 
-Talk is a Larravel package so you can install it via composer. Run this command in your terminal from your project directory.
+Talk is a Laravel package so you can install it via composer. Run this command in your terminal from your project directory.
 
 ```
 composer require nahid/talk
@@ -61,49 +47,38 @@ Okay, now you need to configure your user model for Talk. Go to `config/talk.php
 ```php
 return [
     'user' => [
-        'model' => 'User\Model'
+        'table' => 'your_users_table_name',
+        'model' => 'User\Model',
+        'columns' => ['column1', 'column2']
     ]
 ];
 ```
 
+[NB: Here columns mean, the columns that you want should be used for inbox queries]
+
 
 ### Usage
 
-Its very easy to use. First you have to set authenticate user id to Talk as globally. 
+Its very easy to use. First you have to set authenticate user id to Talk. 
 
 ```php
 Talk::setAuthUserId(auth()->user()->id);
 ```
 
-Now you may use any method what you need. But if want pass authentic id instantly, this method may help you.
-
-```php
-Talk::user(auth()->user()->id)->anyMethodHere();
-```
- Please see the API Doc.
+Now you may use any method what you need. Please see the API Doc.
 
 ### API List
 
 
 - [setAuthUserId](https://github.com/nahid/talk#setauthuserid)
-- [user](https://github.com/nahid/talk#setauthuserid)
 - [isConversationExists](https://github.com/nahid/talk#isconversationexists)
 - [isAuthenticUser](https://github.com/nahid/talk#isauthenticuser)
 - [sendMessage](https://github.com/nahid/talk#sendmessage)
 - [sendMessageByUserId](https://github.com/nahid/talk#sendmessagebyuserid)
 - [getInbox](https://github.com/nahid/talk#getinbox)
 - [getInboxAll](https://github.com/nahid/talk#getinboxAll)
-- [threads](https://github.com/nahid/talk#getinbox)
-- [threadsAll](https://github.com/nahid/talk#getinbox)
 - [getConversationsById](https://github.com/nahid/talk#getconversationbyid)
-- [getConversationsAllById](https://github.com/nahid/talk#getinbox)
 - [getConversationsByUserId](https://github.com/nahid/talk#getconversationbyuserid)
-- [getConversationsAllByUserId](https://github.com/nahid/talk#getinbox)
-- [getMessages](https://github.com/nahid/talk#getinbox)
-- [getMessagesByUserId](https://github.com/nahid/talk#getinbox)
-- [getMessagesAll](https://github.com/nahid/talk#getinbox)
-- [getMessagesAllByUserId](https://github.com/nahid/talk#getinbox)
-- [readMessage](https://github.com/nahid/talk#getinbox)
 - [makeSeen](https://github.com/nahid/talk#makeseen)
 - [getReceiverInfo](https://github.com/nahid/talk#getreceiverinfo)
 - [deleteMessage](https://github.com/nahid/talk#deletemessage)
@@ -113,26 +88,13 @@ Talk::user(auth()->user()->id)->anyMethodHere();
 
 #### setAuthUserId
 
-`setAuthUserId` method sets the currently loggedin user id, which you pass through parameter. If you pass `null` or `empty` value then its return false.
+`setAuthUserId` method sets the user id, which you pass through parameter
 
 **Syntax**
 
 ```php
 void setAuthUserId($userid)
 ```
-
-**Example**
-
-Constructor of a Controller is the best place to write this method. 
-
-```php
-function __construct()
-{
-    Talk::setAuthUserId(auth()->user()->id);
-}
-```
-
-When you pass logged in user ID, Talk will know who is currently authenticated for this system. So Talk retrieve all information based on this user.
 
 
 #### isConversationExists
@@ -266,8 +228,6 @@ This method is used to permanently delete all conversations
 boolean deleteConversations($conversationId)
 ```
 
-### Try Demo
-[Talk-Example](https://github.com/nahid/talk-example)
 
 #### Special Thanks To
 [Shipu Ahamed](https://github.com/shipu)
@@ -278,4 +238,3 @@ Thanks :)
 Hey dude! Help me out for a couple of :beers:!
 
 [![Beerpay](https://beerpay.io/nahid/talk/badge.svg?style=beer-square)](https://beerpay.io/nahid/talk)  [![Beerpay](https://beerpay.io/nahid/talk/make-wish.svg?style=flat-square)](https://beerpay.io/nahid/talk?focus=wish)
-
