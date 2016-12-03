@@ -1,14 +1,28 @@
 # Laravel-Talk
 
-Talk is a Laravel 5 based user conversation (inbox) system. You can easily integrate this package with any Laravel based project. It helps you to develop a messaging system in just 25 mins. So let's start :)
+Talk is a Laravel 5 based user conversation (inbox) system. You can easily integrate this package with any Laravel based project. It helps you to develop a messaging system in just few mins. Here is a project screenshot that was developed by Talk.
 
+![Talk-Example Screenshot](http://i.imgur.com/uQ7sgmI.png "Talk-Example Project")
 
-   
-![Talk Screenshot](http://i.imgur.com/ELqGVrx.png?1 "Talk Conversation System")
+You may try [Talk-Example](https://github.com/nahid/talk-example) project.
+
+So let's start your tour :)
+
+### Features
+
+* Head to head messaging
+* Creating new conversation
+* Message threads with latest one
+* View conversations by user id or conversation id
+* Support pagination in threads and messages
+* Delete(soft delete) message from both end. Sender and receiver can delete their message from their end.
+* Permanent delete message
+* Mark message as seen
+* Only participant can view or access there message or message threads
 
 ### Installation
 
-Talk is a Laravel package so you can install it via composer. Run this command in your terminal from your project directory.
+Talk is a Larravel package so you can install it via composer. Run this command in your terminal from your project directory.
 
 ```
 composer require nahid/talk
@@ -47,38 +61,49 @@ Okay, now you need to configure your user model for Talk. Go to `config/talk.php
 ```php
 return [
     'user' => [
-        'table' => 'your_users_table_name',
-        'model' => 'User\Model',
-        'columns' => ['column1', 'column2']
+        'model' => 'User\Model'
     ]
 ];
 ```
 
-[NB: Here columns mean, the columns that you want should be used for inbox queries]
-
 
 ### Usage
 
-Its very easy to use. First you have to set authenticate user id to Talk. 
+Its very easy to use. First you have to set authenticate user id to Talk as globally. 
 
 ```php
 Talk::setAuthUserId(auth()->user()->id);
 ```
 
-Now you may use any method what you need. Please see the API Doc.
+Now you may use any method what you need. But if want pass authentic id instantly, this method may help you.
+
+```php
+Talk::user(auth()->user()->id)->anyMethodHere();
+```
+ Please see the API Doc.
 
 ### API List
 
 
 - [setAuthUserId](https://github.com/nahid/talk#setauthuserid)
+- [user](https://github.com/nahid/talk#user)
 - [isConversationExists](https://github.com/nahid/talk#isconversationexists)
 - [isAuthenticUser](https://github.com/nahid/talk#isauthenticuser)
 - [sendMessage](https://github.com/nahid/talk#sendmessage)
 - [sendMessageByUserId](https://github.com/nahid/talk#sendmessagebyuserid)
 - [getInbox](https://github.com/nahid/talk#getinbox)
 - [getInboxAll](https://github.com/nahid/talk#getinboxAll)
+- [threads](https://github.com/nahid/talk#threads)
+- [threadsAll](https://github.com/nahid/talk#threadsall)
 - [getConversationsById](https://github.com/nahid/talk#getconversationbyid)
+- [getConversationsAllById](https://github.com/nahid/talk#getconversationallbyid)
 - [getConversationsByUserId](https://github.com/nahid/talk#getconversationbyuserid)
+- [getConversationsAllByUserId](https://github.com/nahid/talk#getconversationallbyuserid)
+- [getMessages](https://github.com/nahid/talk#getmessages)
+- [getMessagesByUserId](https://github.com/nahid/talk#getmessagesbyuserid)
+- [getMessagesAll](https://github.com/nahid/talk#getmessagesall)
+- [getMessagesAllByUserId](https://github.com/nahid/talk#getmessagesallbyuserid)
+- [readMessage](https://github.com/nahid/talk#readmessage)
 - [makeSeen](https://github.com/nahid/talk#makeseen)
 - [getReceiverInfo](https://github.com/nahid/talk#getreceiverinfo)
 - [deleteMessage](https://github.com/nahid/talk#deletemessage)
@@ -88,7 +113,7 @@ Now you may use any method what you need. Please see the API Doc.
 
 #### setAuthUserId
 
-`setAuthUserId` method sets the user id, which you pass through parameter
+`setAuthUserId` method sets the currently loggedin user id, which you pass through parameter. If you pass `null` or `empty` value then its return false.
 
 **Syntax**
 
@@ -96,6 +121,34 @@ Now you may use any method what you need. Please see the API Doc.
 void setAuthUserId($userid)
 ```
 
+**Example**
+
+Constructor of a Controller is the best place to write this method. 
+
+```php
+function __construct()
+{
+    Talk::setAuthUserId(auth()->user()->id);
+}
+```
+
+When you pass logged in user ID, Talk will know who is currently authenticated for this system. So Talk retrieve all information based on this user.
+
+#### user
+
+You may use this method replacement of `setAuthUserId()` method. When you have to instantly access users conversations then you may use it.
+**Syntax**
+
+```php
+object user($id)
+```
+**Example**
+When you haven't set authenticated user id globally, then you just use this method directly with others method.
+
+```php
+$inboxes = Talk::user(auth()->user()->id)->threads();
+return view('messages.threads', compact('inboxes'));
+```
 
 #### isConversationExists
 
@@ -105,6 +158,14 @@ This method checks currently logged in user and if given user is already in conv
 
 ```php
 int/false isConversationExists($userid)
+```
+
+**Example**
+
+```php
+if ($conversationId = Talk::isConversationExists($userId)) {
+    Talk::sendMessage($conversationId, $message);
+} 
 ```
 
 #### isAuthenticUser
@@ -117,6 +178,14 @@ isAuthenticUser checks if  the given user exists in given conversation.
 boolean isAuthenticUser($conversationId, $userId)
 ```
 
+**Example**
+
+```php
+if (Talk::isAuthenticUser($conversationId, $userId)) {
+    Talk::sendMessage($conversationId, $message);
+} 
+```
+
 #### sendMessage
 
 You can send messages via conversation id by using this method. If the message is successfully sent, it will return objects of Message model otherwise, it will return `false`
@@ -125,6 +194,15 @@ You can send messages via conversation id by using this method. If the message i
 
 ```php
 object/false sendMessage($conversationId, $message)
+```
+
+**Example**
+
+```php
+    $message = Talk::sendMessage($conversationId, $message);
+    if ($message) {
+        return response()->json(['status'=>'success', 'data'=>$message], 200]);
+   }
 ```
 
 #### sendMessageByUserId
@@ -139,22 +217,44 @@ object/false sendMessageByUserId($userId, $message)
 
 #### getInbox
 
-If you want to get all the inboxes, this method may help you. This method gets all the inboxes via given user id
+If you want to get all the inboxes except soft deleted message , this method may help you. This method gets all the inboxes via previously assigned authenticated user id. Its return collections of message thread with latest message.
 
 **Syntax**
 
 ```php
-object getInbox([$offset[, $take]])
+array getInbox([$order = 'desc'[,$offset = 0[, $take = 20]]])
+```
+
+
+**Example**
+
+```php
+// controller method
+$inboxes = Talk::getInbox();
+return view('message.threads', compact('inboxes');
+```
+
+```html
+<!-- messages/threads.blade.php -->
+<ul>
+    @foreach($inboxes as $inbox)
+        <li>
+            <h2>{{$inbox->withUser->name}}</h2>
+            <p>{{$inbox->thread->message}}</p>
+            <span>{{$inbox->thread->humans_time}}</span>
+        </li>
+    @endforeach
+</ul>
 ```
 
 #### getInboxAll
 
-If you want to get all the inboxes with soft deleted messages, this method may help you. This method gets all the inboxes via given user id
+Its similar as `getInbox()` method. If you want to get all the inboxes with soft deleted messages, this method may help you. This method gets all the inboxes via given user id.
 
 **Syntax**
 
 ```php
-object getInboxAll([$offset[, $take]])
+object getInboxAll([$order = 'desc'[,$offset = 0[, $take = 20]]])
 ```
 
 #### getConversationsById
@@ -228,6 +328,8 @@ This method is used to permanently delete all conversations
 boolean deleteConversations($conversationId)
 ```
 
+### Try Demo
+[Talk-Example](https://github.com/nahid/talk-example)
 
 #### Special Thanks To
 [Shipu Ahamed](https://github.com/shipu)
@@ -238,3 +340,4 @@ Thanks :)
 Hey dude! Help me out for a couple of :beers:!
 
 [![Beerpay](https://beerpay.io/nahid/talk/badge.svg?style=beer-square)](https://beerpay.io/nahid/talk)  [![Beerpay](https://beerpay.io/nahid/talk/make-wish.svg?style=flat-square)](https://beerpay.io/nahid/talk?focus=wish)
+
